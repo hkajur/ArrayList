@@ -48,3 +48,33 @@ ArrayList *destroyArrayList(ArrayList *list){
 
 	return NULL;
 }
+
+ArrayList *expandArrayList(ArrayList *list, int length){
+
+	char ** arr = NULL;
+
+	int index, cap, size;
+	
+	cap = list->capacity;
+	size = list->size;
+
+	if(length <= cap)
+		return list;
+	
+	arr = (char **)malloc(length * sizeof(char *));
+	
+	if(arr == NULL)
+		return NULL;
+
+	for(index = 0; index < size; index++)
+		arr[index] = list->array[index];
+
+	for(index = size; index < length; index++)
+		arr[index] = NULL;
+
+	free(list->array);
+
+	list->array = arr;
+	
+	return list;
+}
