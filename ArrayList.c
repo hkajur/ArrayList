@@ -51,30 +51,62 @@ ArrayList *destroyArrayList(ArrayList *list){
 
 ArrayList *expandArrayList(ArrayList *list, int length){
 
-	char ** arr = NULL;
+	int index, size;
+	char ** array = NULL;
 
-	int index, cap, size;
-	
-	cap = list->capacity;
+	if(list == NULL)
+		return NULL;
+
 	size = list->size;
 
-	if(length <= cap)
+	if(length <= list->capacity)
 		return list;
 	
-	arr = (char **)malloc(length * sizeof(char *));
+	array = (char **)malloc(length * sizeof(char *));
 	
 	if(arr == NULL)
 		return NULL;
 
 	for(index = 0; index < size; index++)
-		arr[index] = list->array[index];
+		array[index] = list->array[index];
 
 	for(index = size; index < length; index++)
-		arr[index] = NULL;
+		array[index] = NULL;
 
 	free(list->array);
-
-	list->array = arr;
 	
+	list->array = array;
+	list->capacity = length;
+
+	printf("-> Expanded ArrayList to size %d.\n", length);
+
+	return list;
+}
+
+ArrayList *trimArrayList(ArrayList *list){
+
+	int index, size;
+	char ** array = NULL;
+
+	if(list == NULL)
+		return NULL;
+
+	size = list->size;
+
+	if(list->capacity <= list->size)
+		return list;
+	
+	array = (char **) malloc(size * sizeof(char*));
+
+	for(index = 0; index < size; index++)
+		array[index] = list->array[index];
+	
+	free(list->array);
+
+	list->array = array;
+	list->capacity = list->size;
+
+	printf("-> Trimmed ArrayList to size %d.\n", list->size);
+
 	return list;
 }
