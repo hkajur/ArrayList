@@ -31,3 +31,20 @@ ArrayList *createArrayList(int length){
 	return list;
 }
 
+ArrayList *destroyArrayList(ArrayList *list){
+
+	int index;
+	int length;
+
+	if(list == NULL)
+		return NULL;
+
+	length = list->size;
+
+	for(index = 0; index < length; index++)
+		free(list->array[index]);
+
+	free(list);
+
+	return NULL;
+}
