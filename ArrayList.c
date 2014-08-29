@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "ArrayList.h"
 
 ArrayList *createArrayList(int length){
@@ -64,7 +65,7 @@ ArrayList *expandArrayList(ArrayList *list, int length){
 	
 	array = (char **)malloc(length * sizeof(char *));
 	
-	if(arr == NULL)
+	if(array == NULL)
 		return NULL;
 
 	for(index = 0; index < size; index++)
@@ -98,6 +99,9 @@ ArrayList *trimArrayList(ArrayList *list){
 	
 	array = (char **) malloc(size * sizeof(char*));
 
+	if(array == NULL)
+		return NULL;
+
 	for(index = 0; index < size; index++)
 		array[index] = list->array[index];
 	
@@ -109,4 +113,33 @@ ArrayList *trimArrayList(ArrayList *list){
 	printf("-> Trimmed ArrayList to size %d.\n", list->size);
 
 	return list;
+}
+
+char *put(ArrayList *list, char *str){
+
+	int index, stringLength;
+
+	if(list == NULL || str == NULL)
+		return NULL;
+
+	if(list->capacity > list->size)
+	{
+		list = expandArrayList(list, list->capacity * 2 + 1);
+	
+		if(list == NULL)
+			return NULl;
+	}
+	
+	index = list->size;
+	stringLength = strlen(str);
+
+	list->array[index] = (char *)malloc(stringLength);
+	
+	if(list->array[index] == NULL)
+		return NULL;
+
+	strncpy(list->array[index], str, stringLength);
+	list->size = list->size + 1;
+
+	return list->array[index];
 }
