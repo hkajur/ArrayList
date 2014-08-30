@@ -51,12 +51,10 @@ ArrayList *destroyArrayList(ArrayList *list){
 
 ArrayList *expandArrayList(ArrayList *list, int length){
 
-	int index, size;
+	int index;
 	char ** array = NULL;
 
 	if(list == NULL)		return NULL;
-
-	size = getSize(list);
 
 	if(length <= list->capacity)
 		return list;
