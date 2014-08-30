@@ -68,10 +68,15 @@ ArrayList *expandArrayList(ArrayList *list, int length){
 	if(array == NULL)
 		return NULL;
 
-	for(index = 0; index < size; index++)
-		array[index] = list->array[index];
+	for(index = 0; index < list->capacity; index++)
+	{
+		if(list->array[index] != NULL)
+			array[index] = list->array[index];
+		else
+			array[index] = NULL;
+	}
 
-	for(index = size; index < length; index++)
+	for(index = list->capacity; index < length; index++)
 		array[index] = NULL;
 
 	free(list->array);
@@ -127,7 +132,7 @@ char *put(ArrayList *list, char *str){
 		list = expandArrayList(list, list->capacity * 2 + 1);
 	
 		if(list == NULL)
-			return NULl;
+			return NULL;
 	}
 	
 	index = list->size;
@@ -143,3 +148,32 @@ char *put(ArrayList *list, char *str){
 
 	return list->array[index];
 }
+
+char *get(ArrayList *list, int index){
+
+	if(index > list->size - 1)
+		return NULL;
+
+	if(list->array[index] == NULL)
+		return NULL;
+
+	return list->array[index];
+}
+
+char *set(ArrayList *list, int index, char *str){
+
+	if(list->array[index] == NULL || index > list->size - 1)
+		return NULL;
+	
+	free(list->array[index]);
+
+	list->array[index] = (char *)malloc(strlen(str));
+
+	if(list->array[index] == NULL)
+		return NULL;
+	
+	strncpy(list->array[index], str, strlen(str));
+
+	return list->array[index];
+}
+
