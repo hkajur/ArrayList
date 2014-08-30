@@ -40,8 +40,10 @@ ArrayList *destroyArrayList(ArrayList *list){
 	length = getSize(list);
 
 	for(index = 0; index < length; index++)
-		free(list->array[index]);
+		if(list->array[index] != NULL)
+			free(list->array[index]);
 
+	free(list->array);
 	free(list);
 
 	return NULL;
