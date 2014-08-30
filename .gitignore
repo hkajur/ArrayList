@@ -1,4 +1,5 @@
 *.o
 *.pdf
 *.txt
+*.exe
 .DS_Store
