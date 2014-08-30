@@ -362,7 +362,7 @@ int getSize(ArrayList *list){
  * ------------------------
  * Print all strings currently in the array
  * 
- * Returns the string "(empty list)" if list ptr is NULL
+ * Prints the string "(empty list)" if list ptr is NULL
  * or if the list array has no elements inside them
  */
 
