@@ -13,13 +13,11 @@ ArrayList *createArrayList(int length){
 
 	list = (ArrayList *)malloc(sizeof(ArrayList));
 	
-	if(list == NULL)
-		return NULL;
+	if(list == NULL)		return NULL;
 
 	list->array = (char **)malloc(length * sizeof(char *));
 	
-	if(list->array == NULL)
-		return NULL;
+	if(list->array == NULL)		return NULL;
 	
 	list->size = 0;
 	list->capacity = length;
@@ -27,7 +25,7 @@ ArrayList *createArrayList(int length){
 	for(index = 0; index < length; index++)
 		list->array[index] = NULL;
 
-	printf("-> Created new ArrayList of Size %d\n", length);
+	printf("-> Created new ArrayList of size %d.\n", length);
 	
 	return list;
 }
@@ -37,10 +35,9 @@ ArrayList *destroyArrayList(ArrayList *list){
 	int index;
 	int length;
 
-	if(list == NULL)
-		return NULL;
+	if(list == NULL)		return NULL;
 
-	length = list->size;
+	length = getSize(list);
 
 	for(index = 0; index < length; index++)
 		free(list->array[index]);
@@ -55,18 +52,16 @@ ArrayList *expandArrayList(ArrayList *list, int length){
 	int index, size;
 	char ** array = NULL;
 
-	if(list == NULL)
-		return NULL;
+	if(list == NULL)		return NULL;
 
-	size = list->size;
+	size = getSize(list);
 
 	if(length <= list->capacity)
 		return list;
 	
 	array = (char **)malloc(length * sizeof(char *));
 	
-	if(array == NULL)
-		return NULL;
+	if(array == NULL)		return NULL;
 
 	for(index = 0; index < list->capacity; index++)
 	{
@@ -94,18 +89,16 @@ ArrayList *trimArrayList(ArrayList *list){
 	int index, size;
 	char ** array = NULL;
 
-	if(list == NULL)
-		return NULL;
+	if(list == NULL)		return NULL;
 
-	size = list->size;
+	size = getSize(list);
 
-	if(list->capacity <= list->size)
+	if(list->capacity <= size)
 		return list;
 	
 	array = (char **) malloc(size * sizeof(char*));
 
-	if(array == NULL)
-		return NULL;
+	if(array == NULL)		return NULL;
 
 	for(index = 0; index < size; index++)
 		array[index] = list->array[index];
@@ -113,9 +106,9 @@ ArrayList *trimArrayList(ArrayList *list){
 	free(list->array);
 
 	list->array = array;
-	list->capacity = list->size;
+	list->capacity = size;
 
-	printf("-> Trimmed ArrayList to size %d.\n", list->size);
+	printf("-> Trimmed ArrayList to size %d.\n", size);
 
 	return list;
 }
@@ -124,56 +117,134 @@ char *put(ArrayList *list, char *str){
 
 	int index, stringLength;
 
-	if(list == NULL || str == NULL)
-		return NULL;
+	if(list == NULL || str == NULL)	return NULL;
 
-	if(list->capacity > list->size)
+	if(list->capacity == getSize(list))
 	{
 		list = expandArrayList(list, list->capacity * 2 + 1);
 	
-		if(list == NULL)
-			return NULL;
+		if(list == NULL)	return NULL;
 	}
 	
-	index = list->size;
+	index = getSize(list);
 	stringLength = strlen(str);
 
-	list->array[index] = (char *)malloc(stringLength);
+	list->array[index] = (char *)malloc(stringLength+1);
 	
-	if(list->array[index] == NULL)
-		return NULL;
+	if(list->array[index] == NULL)	return NULL;
 
 	strncpy(list->array[index], str, stringLength);
-	list->size = list->size + 1;
+	list->array[index][stringLength] = '\0';
+
+	list->size = getSize(list) + 1;
 
 	return list->array[index];
 }
 
 char *get(ArrayList *list, int index){
 
-	if(index > list->size - 1)
-		return NULL;
-
-	if(list->array[index] == NULL)
-		return NULL;
-
+	if(list == NULL)		return NULL;
+	if(getSize(list) == -1) 	return NULL;
+	if(index > getSize(list) - 1)  	return NULL;
+	if(index < 0)  			return NULL;
+	if(list->array[index] == NULL)	return NULL;
+	
 	return list->array[index];
 }
 
 char *set(ArrayList *list, int index, char *str){
 
-	if(list->array[index] == NULL || index > list->size - 1)
-		return NULL;
+	if(list == NULL)		return NULL;
+	if(getSize(list) == -1) 	return NULL;
+	if(index > getSize(list) - 1)  	return NULL;
+	if(index < 0)  			return NULL;
+	if(list->array[index] == NULL)	return NULL;
+	if(str == NULL)			return NULL;	
 	
 	free(list->array[index]);
 
-	list->array[index] = (char *)malloc(strlen(str));
+	list->array[index] = (char *)malloc(strlen(str)+1);
 
-	if(list->array[index] == NULL)
-		return NULL;
+	if(list->array[index] == NULL)	return NULL;
 	
 	strncpy(list->array[index], str, strlen(str));
+	list->array[index][strlen(str)] = '\0';
 
 	return list->array[index];
 }
 
+char *insertElement(ArrayList *list, int index, char *str){
+
+	int startPos, endPos, i;
+	char * tmp;
+
+	if(list == NULL || str == NULL)	return NULL;
+
+	if(list->capacity == getSize(list))
+		list = expandArrayList(list, list->capacity * 2 + 1);
+	
+	if(index > getSize(list)){
+		tmp = put(list, str);
+		if(tmp == NULL)		return NULL;
+		return tmp;
+	}
+	else {
+		startPos = index;
+		endPos = getSize(list);
+
+		for(i = endPos; i > startPos; i--)
+			list->array[i] = list->array[i-1];
+
+		list->array[index] = (char *)malloc(strlen(str) + 1);
+		tmp = list->array[index];
+
+		if(tmp == NULL)		return NULL;
+
+		strncpy(tmp, str, strlen(str));
+		tmp[strlen(str)] = '\0';
+
+		list->size = getSize(list) + 1;
+
+		return tmp;
+	}
+
+}
+
+int removeElement(ArrayList *list, int index){
+
+	int startPos, endPos, i;
+
+	if(list == NULL)		return 0;
+	if(index > getSize(list) - 1)	return 0;
+
+	free(list->array[index]);
+
+	startPos = index;
+	endPos = getSize(list) - 1;
+
+	for(i = startPos; i < endPos; i++)
+		list->array[i] = list->array[i+1];
+	
+	list->size = getSize(list) - 1;
+	
+	return 0;
+}
+
+int getSize(ArrayList *list){
+
+	if(list == NULL)
+		return -1;
+
+	return list->size;
+}
+
+void printArrayList(ArrayList *list){
+
+	int index;
+
+	if(list == NULL)	printf("(empty list)\n");
+	if(getSize(list) == 0)	printf("(empty list)\n");
+
+	for(index = 0; index < getSize(list); index++)
+		printf("%s\n", get(list, index));
+}
